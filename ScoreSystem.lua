@@ -2,7 +2,7 @@
 behaviour("ScoreSystem")
 
 function ScoreSystem:Awake()
-	self.gameObject.name = "ScoreSystem"
+	self.gameObject.name = "Score System"
 end
 
 function ScoreSystem:Start()

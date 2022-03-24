@@ -29,14 +29,16 @@ function MedalSystem:Start()
 	if scoreSystemObj then
 		self.scoreSystem = scoreSystemObj.GetComponent(ScriptedBehaviour)
 	end
+
+	--self:DisableDefaultHUD()
 end
 
 function MedalSystem:Update()
 	
-	--[[if(Input.GetKeyDown(KeyCode.O)) then
+	if(Input.GetKeyDown(KeyCode.O)) then
 		self.killStreak = self.killStreak + 1
 		self:CheckStreak()
-	end]]--
+	end
 
 	if(self.rapidKillsTimer > 0) then
 		self.rapidKillsTimer = self.rapidKillsTimer - Time.deltaTime
@@ -151,4 +153,9 @@ function MedalSystem:GenerateMedal(medalName, medalType, bonusPoints, multiplier
 
 	table.insert(self.medalQueue, medalData)
 
+end
+
+function MedalSystem:DisableDefaultHUD()
+	self.targets.hud.self:Disable()
+	self.targets.hud.gameObject.SetActive(false)
 end
