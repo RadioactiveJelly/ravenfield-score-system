@@ -15,10 +15,10 @@ function ScoreSystem:Start()
 end
 
 function ScoreSystem:Update()
-	--[[if Input.GetKeyDown(KeyCode.O) then
+	--[[if Input.GetKeyDown(KeyCode.I) then
 		self:AddScore(100,false,true)
-	end
-	if Input.GetKeyDown(KeyCode.I) then
+	end]]--
+	--[[if Input.GetKeyDown(KeyCode.I) then
 		self:AddMultiplier(1)
 	end]]--
 end
@@ -50,4 +50,9 @@ function ScoreSystem:AddScore(score, flat, history)
 	if(history) then
 		table.insert(self.pointsHistory, earnedScore)
 	end
+end
+
+function ScoreSystem:DisableDefaultHUD()
+	self.targets.hud.self:Disable()
+	self.targets.hud.gameObject.SetActive(false)
 end

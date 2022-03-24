@@ -25,7 +25,7 @@ function MedalSystem:Start()
 	self.rapidKillsTimer = 0
 	self.rapidKills = 0
 
-	local scoreSystemObj = self.gameObject.Find("ScoreSystem")
+	local scoreSystemObj = self.gameObject.Find("Score System")
 	if scoreSystemObj then
 		self.scoreSystem = scoreSystemObj.GetComponent(ScriptedBehaviour)
 	end
@@ -35,14 +35,14 @@ end
 
 function MedalSystem:Update()
 	
-	if(Input.GetKeyDown(KeyCode.O)) then
-		self.killStreak = self.killStreak + 1
-		self:CheckStreak()
-	end
+	--[[if(Input.GetKeyDown(KeyCode.O)) then
+		self.rapidKills = self.rapidKills + 1
+		self.rapidKillsTimer = 5
+	end]]--
 
 	if(self.rapidKillsTimer > 0) then
 		self.rapidKillsTimer = self.rapidKillsTimer - Time.deltaTime
-		if(self.rapidKillsTimer <= 0) then
+		if(self.rapidKillsTimer <= 0 or self.rapidKills >= 9) then
 			self:EvaluateRapidKills()
 			self.rapidKills = 0
 		end

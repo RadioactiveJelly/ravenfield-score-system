@@ -67,7 +67,11 @@ function MedalDisplay:Update()
 			local medal = self.targets.system.self.medalQueue[1]
 			local medalName = ""
 			if(medal.medalType == "KillStreak") then
-				medalName = medal.medalName
+				medalName = medal.medalName .. "!"
+			elseif(medal.medalType == "Kill") then
+				medalName = medal.medalName .. "!"
+			elseif(medal.medalType == "RapidKills") then
+				medalName = self:GetRapidKillMedalName(medal.medalName) .. "!"
 			end
 		
 			local bonusText = ""
@@ -112,4 +116,29 @@ end
 
 function MedalDisplay:Disable()
 	self.enabled = false
+end
+
+function MedalDisplay:GetRapidKillMedalName(medalName)
+
+	local toReturn = ""
+
+	if medalName == "DoubleChain" then
+		toReturn = "Double Kill"
+	elseif medalName == "TripleChain" then
+		toReturn = "Triple Kill"
+	elseif medalName == "QuadChain" then
+		toReturn = "Fury Kill"
+	elseif medalName == "PentaChain" then
+		toReturn = "Frenzy Kill"
+	elseif medalName == "HexaChain" then
+		toReturn = "Super Kill"
+	elseif medalName == "HeptaChain" then
+		toReturn = "Mega Kill"
+	elseif medalName == "OctaChain" then
+		toReturn = "Ultra Kill"
+	elseif medalName == "KillChain" then
+		toReturn = "Kill Chain"
+	end	
+
+	return toReturn
 end
