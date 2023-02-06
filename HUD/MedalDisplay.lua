@@ -70,6 +70,8 @@ function MedalDisplay:Update()
 				medalName = medal.medalName .. "!"
 			elseif(medal.medalType == "Kill") then
 				medalName = medal.medalName .. "!"
+			elseif(medal.medalType == "Other") then
+				medalName = medal.medalName .. "!"
 			elseif(medal.medalType == "RapidKills") then
 				medalName = self:GetRapidKillMedalName(medal.medalName) .. "!"
 			end

@@ -4,7 +4,6 @@ behaviour("ScoreDisplay")
 function ScoreDisplay:Start()
 	--GameEvents.onActorSpawn.AddListener(self,"onActorSpawn")
 	--GameEvents.onActorDied.AddListener(self,"onActorDied")
-
 	self.scoreSystem = self.targets.scoreSystem
 	self.timeBeforeDecay = 1.5
 
@@ -86,5 +85,7 @@ end
 
 
 function ScoreDisplay:MatchEnd(team)
-	self.targets.finalText.text = "Final Score: " .. self.scoreSystem.self.totalPoints
+	if self.enabled then
+		self.targets.finalText.text = "Final Score: " .. self.scoreSystem.self.totalPoints
+	end
 end

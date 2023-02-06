@@ -7,19 +7,22 @@ function MedalSystem:Awake()
 end
 
 function MedalSystem:Start()
-	-- Run when behaviour is created
 	GameEvents.onActorDied.AddListener(self,"onActorDied")
+	GameEvents.onCapturePointCaptured.AddListener(self,"onCapturePointCaptured")
+	GameEvents.onActorSpawn.AddListener(self,"onActorSpawn")
+	GameEvents.onMatchEnd.AddListener(self,"onMatchEnd")
+	GameEvents.onPlayerDealtDamage.AddListener(self,"onPlayerDealtDamage")
 
 	--Kill Medals
 	self.killStreak = 0
 	self.lastKillStreak = ""
 
-	self.actors = ActorManager.actors
+	--[[self.actors = ActorManager.actors
 	for i = 1, #self.actors, 1 do
-		if not self.actors[i].isPlayer then
+		if not self.actors[i].isPlayer and Player.actor.team ~= self.actors[i].team then
 			self.actors[i].onTakeDamage.AddListener(self,"onTakeDamage")
 		end
-	end
+	end]]--
 
 	self.timeForRapidKills = 5
 	self.rapidKillsTimer = 0
@@ -29,15 +32,12 @@ function MedalSystem:Start()
 	if scoreSystemObj then
 		self.scoreSystem = scoreSystemObj.GetComponent(ScriptedBehaviour)
 	end
-
-	--self:DisableDefaultHUD()
 end
 
 function MedalSystem:Update()
 	
 	--[[if(Input.GetKeyDown(KeyCode.O)) then
-		self.rapidKills = self.rapidKills + 1
-		self.rapidKillsTimer = 5
+		self:GenerateMedal("Point Captured", "Other", 300, 0)
 	end]]--
 
 	if(self.rapidKillsTimer > 0) then
@@ -113,25 +113,33 @@ function MedalSystem:RemoveTopMedal()
 	table.remove(self.medalQueue,1)
 end
 
-function MedalSystem:onTakeDamage(actor, source, info)
+--[[function MedalSystem:onTakeDamage(actor, source, info)
 	if actor.isDead then
 		return
 	end
 
 	if source and source.isPlayer and source.team ~= actor.team then
-		if info.isCriticalHit and not info.isSplashDamage then
-			if info.healthDamage >= actor.health then
+		if info.healthDamage >= actor.health then
+			if info.isCriticalHit and not info.isSplashDamage then
 				self:GenerateMedal("Headshot", "Kill", 100, 0)
 			end
-		end
-		if info.healthDamage >= actor.health then
+
 			if ActorManager.ActorDistanceToPlayer(actor) >= 50 and not info.isSplashDamage then
 				self:GenerateMedal("Longshot", "Kill", 50, 0)
 			end
+
+			local capPoint = Player.actor.currentCapturePoint
+			if capPoint then
+				if capPoint.owner == Player.actor.team then
+					bonus = bonus + 10
+					self:GenerateMedal("Defensive Kill", "Kill", 50, 0)
+				else
+					self:GenerateMedal("Offensive Kill", "Kill", 50, 0)
+				end
+			end
 		end
-		
 	end
-end
+end]]--
 
 function MedalSystem:GenerateMedal(medalName, medalType, bonusPoints, multiplierBonus)
 
@@ -158,4 +166,50 @@ end
 function MedalSystem:DisableDefaultHUD()
 	self.targets.hud.self:Disable()
 	self.targets.hud.gameObject.SetActive(false)
+end
+
+function MedalSystem:onCapturePointCaptured(capturePoint, newOwner)
+	if self.hasSpawnedOnce and not Player.actor.isDead then
+		if Player.actor.currentCapturePoint == capturePoint and Player.actor.team == newOwner then
+			self:GenerateMedal("Point Captured", "Other", 300, 0)
+		end
+	end
+end
+
+function MedalSystem:onMatchEnd(team)
+	if Player.actor.team == team then
+		self:GenerateMedal("Victory", "Other", 2500, 0)
+	end
+end
+
+function MedalSystem:onActorSpawn(actor)
+	if(actor == Player.actor) then
+		self.hasSpawnedOnce = true
+	end
+end
+
+function MedalSystem:onPlayerDealtDamage(damageInfo, hitInfo)
+	if hitInfo.actor == nil then return end
+	if hitInfo.actor.isDead then return end
+
+	if Player.actor.team ~= hitInfo.actor.team then
+		if damageInfo.healthDamage >= hitInfo.actor.health then
+			if damageInfo.isCriticalHit and not damageInfo.isSplashDamage then
+				self:GenerateMedal("Headshot", "Kill", 100, 0)
+			end
+
+			if ActorManager.ActorDistanceToPlayer(hitInfo.actor) >= 50 and not damageInfo.isSplashDamage then
+				self:GenerateMedal("Longshot", "Kill", 50, 0)
+			end
+
+			local capPoint = Player.actor.currentCapturePoint
+			if capPoint then
+				if capPoint.owner == Player.actor.team then
+					self:GenerateMedal("Defensive Kill", "Kill", 25, 0)
+				else
+					self:GenerateMedal("Offensive Kill", "Kill", 50, 0)
+				end
+			end
+		end
+	end
 end
